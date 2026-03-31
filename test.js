@@ -1,5 +1,5 @@
 const http = require('http');
-const server = require('./server');
+const server = require('./dist/index');
 
 let passed = 0;
 let failed = 0;

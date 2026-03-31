@@ -1,4 +1,21 @@
-<!DOCTYPE html>
+import http from 'node:http';
+import pino from 'pino';
+
+const logger = pino({ name: 'hw1' });
+
+const greetings: string[] = [
+  'Hello, World!',
+  'Hey there!',
+  'Greetings, traveler!',
+  'Hi friend!',
+  'Welcome!',
+  'Good day!',
+  'Howdy!',
+  'Salutations!',
+];
+
+function renderHtml(serverTime: string): string {
+  return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -73,16 +90,6 @@
       line-height: 1.5;
     }
 
-    a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-      color: var(--accent-hover);
-    }
-
     .time-display {
       font-size: 1.25rem;
       margin-bottom: 1.5rem;
@@ -127,7 +134,7 @@
       padding-top: 1rem;
     }
 
-    @media (max-width: 30rem) { /* Mobile: ~480px */
+    @media (max-width: 30rem) {
       body {
         padding: 1rem;
       }
@@ -171,9 +178,9 @@
     </div>
     <div class="card">
       <h3>Features</h3>
-      <p>Dark background with brown undertones. Amber accent colors for highlights and interactive elements. <a href="#">Links stand out</a> without being harsh.</p>
+      <p>Dark background with brown undertones. Amber accent colors for highlights and interactive elements. Links stand out without being harsh.</p>
     </div>
-    <div class="time-display" data-testid="time-display" aria-label="Current time"></div>
+    <div class="time-display" data-testid="time-display" aria-label="Current time">${serverTime}</div>
     <button class="btn" data-testid="greeting-button">Get Started</button>
     <p data-testid="greeting-output" class="greeting-output" aria-live="polite"></p>
     <div class="footer">Built with warm colors and good intentions.</div>
@@ -212,4 +219,42 @@
     })();
   </script>
 </body>
-</html>
+</html>`;
+}
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && req.url === '/') {
+    const serverTime = new Date().toLocaleTimeString();
+    const html = renderHtml(serverTime);
+    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+    res.end(html);
+    return;
+  }
+
+  if (req.url === '/api/greeting') {
+    if (req.method !== 'GET') {
+      res.writeHead(405, { 'Content-Type': 'application/json; charset=utf-8' });
+      res.end(JSON.stringify({ error: 'Method not allowed' }));
+      return;
+    }
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ greeting }));
+    return;
+  }
+
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not Found');
+});
+
+const parsed = parseInt(process.env.PORT || '3000', 10);
+const port = Number.isNaN(parsed) ? 3000 : parsed;
+
+if (require.main === module) {
+  server.listen(port, () => {
+    logger.info({ port }, 'Server listening');
+  });
+}
+
+module.exports = server;
+export default server;
