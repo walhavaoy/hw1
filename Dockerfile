@@ -1,4 +1,8 @@
-ARG BASE_IMAGE=nginx:alpine
+ARG BASE_IMAGE=node:22-slim
 FROM ${BASE_IMAGE}
-COPY index.html /usr/share/nginx/html/index.html
-EXPOSE 80
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --production
+COPY server.js index.html ./
+EXPOSE 3000
+CMD ["node", "server.js"]
