@@ -134,6 +134,11 @@ function renderHtml(serverTime: string): string {
       padding-top: 1rem;
     }
 
+    .cards {
+      display: flex;
+      flex-direction: column;
+    }
+
     @media (max-width: 30rem) {
       body {
         padding: 1rem;
@@ -144,7 +149,8 @@ function renderHtml(serverTime: string): string {
       }
 
       p.subtitle {
-        margin-bottom: 1.25rem;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
       }
 
       .card {
@@ -153,17 +159,22 @@ function renderHtml(serverTime: string): string {
 
       .time-display {
         font-size: 1rem;
-        margin-bottom: 1rem;
+      }
+    }
+
+    @media (min-width: 64rem) {
+      .container {
+        max-width: 42rem;
       }
 
-      .btn {
-        display: block;
-        width: 100%;
-        text-align: center;
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
       }
 
-      .footer {
-        margin-top: 1.25rem;
+      .cards .card {
+        margin-bottom: 0;
       }
     }
   </style>
@@ -172,13 +183,15 @@ function renderHtml(serverTime: string): string {
   <div class="container">
     <h1 data-testid="heading">Hello World</h1>
     <p class="subtitle">A warm, friendly dark theme with ember tones</p>
-    <div class="card">
-      <h3>Welcome</h3>
-      <p>This is a minimal card component styled with warm charcoal backgrounds and cream-colored text. All colors use CSS custom properties for easy theming.</p>
-    </div>
-    <div class="card">
-      <h3>Features</h3>
-      <p>Dark background with brown undertones. Amber accent colors for highlights and interactive elements. Links stand out without being harsh.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>Welcome</h3>
+        <p>This is a minimal card component styled with warm charcoal backgrounds and cream-colored text. All colors use CSS custom properties for easy theming.</p>
+      </div>
+      <div class="card">
+        <h3>Features</h3>
+        <p>Dark background with brown undertones. Amber accent colors for highlights and interactive elements.</p>
+      </div>
     </div>
     <div class="time-display" data-testid="time-display" aria-label="Current time">${serverTime}</div>
     <button class="btn" data-testid="greeting-button">Get Started</button>
